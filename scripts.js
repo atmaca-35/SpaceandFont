@@ -47,12 +47,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const normalizedQuery = normalizeTurkish(query);
 
-        // Tüm kelimeleri alfabetik sıraya göre sıralar
         const sortedWords = Object.keys(dictionaryData)
             .map(word => ({ word: normalizeTurkish(word), original: word }))
             .sort((a, b) => a.word.localeCompare(b.word));
 
-        // En yakın kelimeyi bulur
         const closestWord = sortedWords
             .find(({ word }) => word.startsWith(normalizedQuery));
 
@@ -158,19 +156,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         return context.measureText(text).width;
     }
 
-    searchBox.addEventListener('input', () => {
+    searchBox.addEventListener('input', (event) => {
         const query = searchBox.value.trim();
+
+        // Eğer imleç baştaysa ve boşluk girilmişse boşluğu sil
+        if (event.inputType === "insertText" && event.data === " " && searchBox.selectionStart === 1) {
+            searchBox.value = searchBox.value.trimStart();
+        }
+
         updateSearchBoxPlaceholder(query);
         searchWord(query);
-    });
-
-    searchBox.addEventListener('keydown', (event) => {
-        // Get the current cursor position (selectionStart)
-        const cursorPosition = searchBox.selectionStart;
-
-        // Space key's keyCode is 32
-        if (event.key === ' ' && cursorPosition === 0) {
-            event.preventDefault(); // Prevent space from being entered at the beginning
-        }
     });
 });
